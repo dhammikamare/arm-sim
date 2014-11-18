@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ARM Editor Online</title>
+
+        <link rel="stylesheet" type="text/css" media="screen" href="cs/style.css">
+
+        <script src="js/controller.js" type="text/javascript" charset="utf-8"></script>
+        <script src="js/jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="js/ace/ace.js" type="text/JavaScript" charset="utf-8"></script>
+        <script src="js/ace/theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        <script src="js/ace/mode-assembly_x86.js" type="text/javascript" charset="utf-8"></script>
+    </head>
+
+    <body>
+    <center>
+        <div id="content">
+            <div id="header">
+                <h1># ARM Editor Online #</h1><br>
+            </div>
+            <div id="codeOutput">
+                Enter your source code below or browse a file to load 
+                <input type="file" id="fileToLoad">
+                <button onclick="loadFileAsText()">Load</button>
+                <br>
+
+                <table>
+                    <tr>
+                        <td>
+                            <div id="editor" style="width: 730px;height: 500px;border: 1px solid rgba(136,164,155, 0.7)">
+                                # ARM program to print "Hello World!"
+
+                                # *************** instruction memory 
+                                .text
+                                .global main
+                                main:  
+                                # store(push) lr to the stack                 
+                                sub		sp, sp, #4
+                                str		lr, [sp, #0]
+
+                                # your code here
+                                ldr		r0, =hello
+                                bl  	printf
+
+                                # retrive(pop) lr from the stack
+                                ldr		lr, [sp, #0]
+                                add		sp, sp, #4
+
+                                # return
+                                mov		pc, lr
+
+                                # *************** data memory 
+                                .data
+                                hello:
+                                .asciz "Hello World!\n" 
+                            </div>
+                            <script>
+                                var editor = ace.edit("editor");
+                                editor.setTheme("ace/theme/cobolt");
+                                var assembly_x86Mode = require("ace/mode/assembly_x86").Mode;
+                                editor.getSession().setMode(new assembly_x86Mode());
+                            </script>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Input (stdin)<br>
+                            <textarea id="stdin_" name ="stdin" style="width:730px;height:50px;" placeholder="your inputs here"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button onclick="simulate()">Simulate</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id = output>
+                            <br>
+                            Output (stdout)<br>
+                            <textarea id="stdout_" name="stdout" style="width:730px;height:200px;" placeholder="your output here"></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </center>
+</body>
+</html>
