@@ -1,0 +1,23 @@
+#body_{
+    background-color:#F0F5F5;
+}
+
+#editor{
+    width: 730px;
+    height: 500px;
+    border: 1px solid rgba(136,164,155, 0.7)
+}
+
+#stdin_{
+    width:730px;
+    height:50px;
+}
+
+#stdout_{
+    width:730px;
+    height:100px;
+}
+
+#download_{
+    float: right;
+}
