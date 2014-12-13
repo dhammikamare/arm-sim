@@ -1,1 +1,5 @@
+### NetBeans ###
 /nbproject/
+
+# Thumbnail Files #
+*.db

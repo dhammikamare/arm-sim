@@ -1,0 +1,56 @@
+commit b27f352c6820a044f9c0febde6d1090aa5d1112e
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Dec 10 12:44:42 2014 +0530
+
+    cleaning netbeans meta data
+
+commit 2d24daf2ef5a60f4eea02a5e7488d9777202524e
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Dec 10 12:26:27 2014 +0530
+
+    cleaning
+
+commit a780073eeca95b9d5f8fc02d03ae1edabbe5bd59
+Merge: ceea792 79d96b1
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Dec 10 12:07:53 2014 +0530
+
+    Merge pull request #1 from dhammika-marasinghe/phpmaster
+    
+    complete iteration 1 after changing to php
+
+commit 79d96b1ac9c09a2b02fd50adb8895f7272727e35
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Dec 10 11:33:53 2014 +0530
+
+    complete iteration 1 after changing to php
+
+commit ceea792ed9c406d6da5ad4a916efa54b3d130df4
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Tue Nov 18 19:35:21 2014 +0530
+
+    client view of arm-sim
+
+commit 05d1d8f6982104bc8647bc5f005fe6f86173bb65
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Thu Nov 6 02:10:07 2014 +0530
+
+    adding gitignore
+
+commit 305b2d5cc37748f21e81e590de2b932bf68c3973
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Nov 5 08:24:14 2014 +0530
+
+    hello arm
+
+commit 85e626bc42dc1a144f72158a911f8cd9f8b0b5b6
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Nov 5 00:02:07 2014 +0530
+
+    initial commit
+
+commit fff87eba7dc146f237a2e124ff53084fa7257ba1
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Tue Nov 4 22:49:45 2014 +0530
+
+    Initial commit
