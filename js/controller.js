@@ -19,12 +19,11 @@ function simulate() {
 
 /*
  * Loading, Editing, and Saving a Text File in HTML5 Using Javascript
- * Author: http://thiscouldbebetter.wordpress.com
- * Source: http://thiscouldbebetter.wordpress.com/2012/12/18/loading-editing-and-saving-a-text-file-in-html5-using-javascrip/
+ * @author: http://thiscouldbebetter.wordpress.com
+ * @source: http://thiscouldbebetter.wordpress.com/2012/12/18/loading-editing-and-saving-a-text-file-in-html5-using-javascrip/
  */
 function loadFileAsText() {
     var fileToLoad = document.getElementById("fileToLoad").files[0];
-
     var fileReader = new FileReader();
     fileReader.onload = function(fileLoadedEvent) {
         var textFromFileLoaded = fileLoadedEvent.target.result;
@@ -32,16 +31,13 @@ function loadFileAsText() {
     };
     fileReader.readAsText(fileToLoad, "UTF-8");
 }
-
 function destroyClickedElement(event) {
     document.body.removeChild(event.target);
 }
-
 function saveTextAsFile() {
     var textToWrite = editor.getValue();
     var textFileAsBlob = new Blob([textToWrite], {type: 'text/plain'});
     var fileNameToSaveAs = "prog.s"
-
     var downloadLink = document.createElement("a");
     downloadLink.download = fileNameToSaveAs;
     downloadLink.innerHTML = "Download File";
@@ -60,3 +56,6 @@ function saveTextAsFile() {
     }
     downloadLink.click();
 }
+/*
+ * End of Loading, Editing, and Saving a Text File in HTML5 Using Javascript
+ */
