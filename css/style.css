@@ -2,8 +2,17 @@
     background-color:#F0F5F5;
 }
 
+#regView {
+    float: left;
+}
+
+.regVal{
+    width: 50px;
+}
+
 #editor{
-    width: 730px;
+    float: right;
+    width: 630px;
     height: 500px;
     border: 1px solid rgba(136,164,155, 0.7)
 }
@@ -14,10 +23,11 @@
 }
 
 #stdout_{
-    width:730px;
-    height:100px;
+    width: 730px;
+    height: 100px;
 }
 
-#download_{
-    float: right;
+img{
+    height: 50px;
+    width: auto;
 }

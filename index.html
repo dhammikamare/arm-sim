@@ -23,6 +23,99 @@
                 <table>
                     <tr>
                         <td>
+                            <div id="regView">
+                                Registers View <br>
+                                >> General Purpose
+                                <table>
+                                    <tr>
+                                        <td>r0</td>
+                                        <td><input class="regVal" id="r0" type="text" name="r0" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r1</td>
+                                        <td><input class="regVal" id="r1" type="text" name="r1" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r2</td>
+                                        <td><input class="regVal" id="r2" type="text" name="r2" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r3</td>
+                                        <td><input class="regVal" id="r3" type="text" name="r3" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r4</td>
+                                        <td><input class="regVal" id="r4" type="text" name="r4" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r5</td>
+                                        <td><input class="regVal" id="r5" type="text" name="r5" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r6</td>
+                                        <td><input class="regVal" id="r6" type="text" name="r6" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r7</td>
+                                        <td><input class="regVal" id="r7" type="text" name="r7" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r8</td>
+                                        <td><input class="regVal" id="r8" type="text" name="r8" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r9</td>
+                                        <td><input class="regVal" id="r9" type="text" name="r9" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r10 (sl)</td>
+                                        <td><input class="regVal" id="r10" type="text" name="r10" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r11 (fp)</td>
+                                        <td><input class="regVal" id="r11" type="text" name="r11" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r12 (ip)</td>
+                                        <td><input class="regVal" id="r12" type="text" name="r12" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r13 (sp)</td>
+                                        <td><input class="regVal" id="r13" type="text" name="r13" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r14 (lr)</td>
+                                        <td><input class="regVal" id="r14" type="text" name="r14" value="0" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>r15 (pc)</td>
+                                        <td><input class="regVal" id="r15" type="text" name="r15" value="0" /></td>
+                                    </tr>
+                                </table>
+                                <div>>> CPSR Registers</div>
+                                <table>
+                                    <tr>
+                                        <td>Negative (N)</td>
+                                        <td><input class="regVal" id="n" type="text" name="n" value="0" disabled="disabled"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Zero (Z)</td>
+                                        <td><input class="regVal" id="z" type="text" name="z" value="0" disabled="disabled"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Carry (C)</td>
+                                        <td><input class="regVal" id="c" type="text" name="c" value="0" disabled="disabled"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Overflow (V)</td>
+                                        <td><input class="regVal" id="v" type="text" name="v" value="0" disabled="disabled"/></td>
+                                    </tr>
+                                </table>
+                                <br>
+                                <input id="bin" type="radio" name="representation" value="bin" onclick="changeBase(2);"/> bin
+                                <input id="dec" type="radio" name="representation" value="dec" onclick="changeBase(10);" checked="checked" /> dec
+                                <input id="hex" type="radio" name="representation" value="hex" onclick="changeBase(16);"/> hex <br>
+                            </div>
                             <div id="editor">
 # ARM program to print "Hello World!"
 
@@ -60,26 +153,31 @@ hello:
                     </tr>
                     <tr>
                         <td>
-                            <div id="download_">
-                                <button onclick="editor.setValue('')">
-                                    <img src="image/cl.png" height="50px" width="auto"/></button>
-                                <button onclick="saveTextAsFile()">
-                                    <img src="image/dl.png" height="50px" width="auto"/></button>
+                            <div>
+                                <center>
+                                    <button onclick="editor.setValue('')">
+                                        <img src="image/cl.png" alt="clear"/></button>
+                                    <button onclick="saveTextAsFile()">
+                                        <img src="image/dl.png" alt="download"/></button>
+                                    <button onclick="simulate()">
+                                        <img src="image/ex.png" alt="simulate"/></button>
+                                    <button onclick="assemble()">Assemble</button>
+                                    <button id="stepIn" onclick="stepIn()" disabled="disabled">Step In</button>
+                                </center>
                             </div>
-                            Input (stdin)<br>
+                            <div id="stepInLine"></div>
+                            <div id="instruct"></div>
+                            <div id="ic"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="">Input (stdin)<br></div>
                             <textarea id="stdin_" name ="stdin" placeholder="your inputs here"></textarea>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                    <center>
-                        <button onclick="simulate()">
-                            <img src="image/ex.png" height="50px" width="auto"/></button>
-                    </center>
-                    </td>
-                    </tr>
-                    <tr>
-                        <td id = output>
                             Output (stdout)<br>
                             <textarea id="stdout_" name="stdout" placeholder="your output here"></textarea>
                         </td>
@@ -88,7 +186,11 @@ hello:
             </div>
         </div>
     </center>
-    <script src="js/controller.js" type="text/javascript" charset="utf-8"></script>
+    <!--script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script-->
     <script src="js/jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/HashTable.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/controller.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/arm-sim.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript"> disableRegVals();</script>
 </body>
 </html>
