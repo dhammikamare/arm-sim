@@ -1,3 +1,33 @@
+commit fb9e8b5467a95fe3d4f734b423e487f0161b0950
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Sun Dec 14 07:49:46 2014 +0530
+
+    updating README with full project details
+
+commit f9edeea61871af60e12773fe53c87b20fbee5aa7
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Sun Dec 14 07:45:03 2014 +0530
+
+    functional implementation of v2
+
+commit 9e7aca68a853ea63930c229c5f0d82f393529af1
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Sun Dec 14 07:43:12 2014 +0530
+
+    UI enhancement for v2
+
+commit eac3a40fe3b407335e17056497dd056dfdd3be3c
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Sat Dec 13 13:28:37 2014 +0530
+
+    updating Ace ARM Highlight Rules
+
+commit 51f5b1d2bbeda5d60e46e93f9b0206605c523db2
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Sat Dec 13 12:56:36 2014 +0530
+
+    changing log and .gitignore
+
 commit b27f352c6820a044f9c0febde6d1090aa5d1112e
 Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
 Date:   Wed Dec 10 12:44:42 2014 +0530
