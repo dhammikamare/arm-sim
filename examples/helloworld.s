@@ -21,5 +21,4 @@ main:
 
 # *************** data memory 
 	.data
-hello:
-	.asciz "Hello World!\n" 
+hello: .asciz "Hello World!\n" 
