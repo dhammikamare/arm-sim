@@ -1,13 +1,17 @@
 var regs;
 var kernal;
+var kernalRegex;
 var lables;
+var lineMapping;
+var dataMemory;
 var instructionLines;
+
 var stepInLine;
 var currentLine;
 var prevBase;
 var ic;
 
-function setVal(args) {
+function getRegVar(args) {
     if (args === 'sp') {
         args = 'r13';
     } else if (args === 'lr') {
@@ -31,7 +35,6 @@ function getVal(args) {
         }
         return regs.getItem(args);
     }
-    console.error('Error: wrong name for register');
 }
 
 /*
@@ -41,28 +44,39 @@ function getVal(args) {
 // Arithmetic Instructions
 function ADD() {
     this.action = function(args) {
-        regs.setItem(setVal(args[0]), parseInt(getVal(args[1])) + parseInt(getVal(args[2])));
+        regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])) + Number.parseInt(getVal(args[2])));
     };
 }
 function SUB() {
     this.action = function(args) {
-        regs.setItem(setVal(args[0]), parseInt(getVal(args[1])) - parseInt(getVal(args[2])));
+        regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])) - Number.parseInt(getVal(args[2])));
     };
 }
 function MUL() {
     this.action = function(args) {
-        regs.setItem(setVal(args[0]), parseInt(getVal(args[1])) * parseInt(getVal(args[2])));
+        regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])) * Number.parseInt(getVal(args[2])));
     };
 }
 
 // Data Transfer Instructions
 function LDR() {
     this.action = function(args) {
+        if (args[1].contains("=")) {
+            regs.setItem(getRegVar(args[0]), lables.getItem(args[1].replace("=", "").concat(":")));
+            return;
+        } else if (args.length === 2 || args[2] === '#0') {
+            regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])));
+            return;
+        }
         console.error('not implement');
     };
 }
 function STR() {
     this.action = function(args) {
+        if (args.length === 2 || args[2] === 0) {
+            regs.setItem(getRegVar(args[1]), Number.parseInt(getVal(args[0])));
+            return;
+        }
         console.error('not implement');
     };
 }
@@ -78,34 +92,34 @@ function STRB() {
 }
 function MOV() {
     this.action = function(args) {
-        regs.setItem(setVal(args[0]), parseInt(getVal(args[1])));
+        regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])));
     };
 }
 
 // Logical Instructions
 function AND() {
     this.action = function(args) {
-        regs.setItem(setVal(args[0]), parseInt(getVal(args[1])) & parseInt(getVal(args[2])));
+        regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])) & Number.parseInt(getVal(args[2])));
     };
 }
 function ORR() {
     this.action = function(args) {
-        regs.setItem(setVal(args[0]), parseInt(getVal(args[1])) | parseInt(getVal(args[2])));
+        regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])) | Number.parseInt(getVal(args[2])));
     };
 }
 function MVN() {
     this.action = function(args) {
-        regs.setItem(setVal(args[0]), ~(parseInt(getVal(args[1]))));
+        regs.setItem(getRegVar(args[0]), ~(Number.parseInt(getVal(args[1]))));
     };
 }
 function LSL() {
     this.action = function(args) {
-        regs.setItem(setVal(args[0]), parseInt(getVal(args[1])) << parseInt(getVal(args[2])));
+        regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])) << Number.parseInt(getVal(args[2])));
     };
 }
 function LSR() {
     this.action = function(args) {
-        regs.setItem(setVal(args[0]), parseInt(getVal(args[1])) >> parseInt(getVal(args[2])));
+        regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])) >> Number.parseInt(getVal(args[2])));
     };
 }
 
@@ -116,7 +130,7 @@ function CMP() {
         regs.setItem('z', 0);
         regs.setItem('c', 0);
         regs.setItem('v', 0);
-        var temp = parseInt(getVal(args[0])) - parseInt(getVal(args[1]));
+        var temp = Number.parseInt(getVal(args[0])) - Number.parseInt(getVal(args[1]));
         if (temp === 0) {
             regs.setItem('z', 1);
             regs.setItem('c', 1);
@@ -136,9 +150,7 @@ function EQ() {
 }
 function NE() {
     this.action = function(args) {
-        var t = regs.getItem('z');
-        console.log('t' + t);
-        if (t == 0) {
+        if (regs.getItem('z') == 0) {
             stepInLine = lables.getItem(args[0] + ':');
         }
     };
@@ -178,6 +190,28 @@ function B() {
         stepInLine = lables.getItem(args[0] + ':');
     };
 }
+function BL() {
+    this.action = function(args) {
+        if (args[0] === "printf") {
+            var text = dataMemory.getItem(regs.getItem('r0'));
+            var escChars = /%(d|c)/;
+            var reg = 1;
+            while (escChars.test(text)) {
+                var val = regs.getItem('r' + reg);
+                if (/%c/.test(text)) {
+                    text = text.replace(/%c/, String.fromCharCode(val));
+                } else {
+                    text = text.replace(/%d/, val);
+                }
+                reg++;
+            }
+            $("#stdout_").val($("#stdout_").val() + text);
+            return;
+        }
+        // todo: scanf
+        console.error('not implement');
+    };
+}
 
 /*
  * end: Implementation of arm functions
@@ -198,7 +232,7 @@ function init() {
     regs.setItem('r10', 0);
     regs.setItem('r11', 0);
     regs.setItem('r12', 0);
-    regs.setItem('r13', 1000); //sp
+    regs.setItem('r13', 1024); //sp
     regs.setItem('r14', 0); //lr
     regs.setItem('r15', 0); //pc
 
@@ -214,8 +248,8 @@ function init() {
 
     kernal.setItem('ldr', new LDR());
     kernal.setItem('str', new STR());
-    kernal.setItem('ldrb', new LDRB());
-    kernal.setItem('strb', new STRB());
+    //kernal.setItem('ldrb', new LDRB());
+    //kernal.setItem('strb', new STRB());
     kernal.setItem('mov', new MOV());
 
     kernal.setItem('and', new AND());
@@ -233,7 +267,9 @@ function init() {
     kernal.setItem('ble', new LE());
 
     kernal.setItem('b', new B());
+    kernal.setItem('bl', new BL());
 
+    kernalRegex = /add|sub|mul|ldr|str|mov|and|orr|mvn|lsl|lsr|cmp|b(eq|ne|ge|lt|gt|le)|b|bl/i;
     prevBase = 10;
     ic = 0;
 }
@@ -247,27 +283,54 @@ function updateUI() {
     $('#z').val(regs.getItem('z'));
     $('#c').val(regs.getItem('c'));
     $('#v').val(regs.getItem('v'));
-    $('#stepInLine').text('line: ' + stepInLine);
+
+    $('#editorLineNum').text('num of instructions: ' + instructionLines.length);
+    $('#stepInLine').text('InstructionNum: ' + stepInLine);
     $('#instruct').text('instruct: ' + currentLine);
+    $('#ic').text('ic: ' + ic);
+    $('#lable').text('lable: ' + lables.print());
+    $('#data').text('data: ' + dataMemory.print());
+    editor.getSession().setAnnotations([{
+            row: lineMapping.getItem(stepInLine) - 1,
+            text: "current execution line",
+            type: "info"
+        }]);
+    editor.selection.moveCursorTo(lineMapping.getItem(stepInLine) - 1, 0, true);
 }
 
 function assemble() {
     init();
     lables = new HashTable();
     instructionLines = new HashTable();
-    var lineNumber = 0;
-    var lable = /:/;
+    dataMemory = new HashTable();
+    lineMapping = new HashTable();
+    var instructMemAddress = 0;
+    var OninstructionLines = true;
+    var dataItems = /.asciz/; // todo: .byte
     var line;
     var code = editor.getValue();
     var codeLines_ = code.split('\n');
-    codeLines_.forEach(function(entry) {
-        lineNumber++;
-        line = entry.trim();
-        instructionLines.setItem(lineNumber, line);
-        if (lable.test(line)) {
-            lables.setItem(line, lineNumber);
+    var l;
+    for (l = 0; l < codeLines_.length; l++) {
+        line = codeLines_[l].trim();
+        if (/.data/.test(line)) {
+            OninstructionLines = false;
         }
-    });
+        if (!(line.startsWith('#') || line.startsWith('@') || line.startsWith('.') || (line.length === 0))) {
+            instructMemAddress++;
+            lineMapping.setItem(instructMemAddress, l + 1);
+            if (dataItems.test(line)) {
+                var arr = line.split(dataItems);
+                lables.setItem(arr[0].trim(), instructMemAddress);
+                //console.log(arr[1].trim());
+                dataMemory.setItem(instructMemAddress, arr[1].trim());
+            } else if (/:/.test(line) && OninstructionLines) {
+                lables.setItem(line, instructMemAddress);
+            }
+            instructionLines.setItem(instructMemAddress, line);
+        }
+    }
+    // setStart
     if (lables.hasItem('main:')) {
         stepInLine = lables.getItem('main:');
         $("#stepIn").prop('disabled', false);
@@ -278,7 +341,9 @@ function assemble() {
 }
 
 function stepIn() {
-    currentLine = instructionLines.getItem(++stepInLine);
+    stepInLine++;
+    currentLine = instructionLines.getItem(stepInLine);
+    regs.setItem(getRegVar('pc'), stepInLine);
     if (/.data/.test(currentLine) || stepInLine > instructionLines.length) {
         alert('Note: code reaches the end.');
         $("#stepIn").prop('disabled', true);
@@ -291,7 +356,7 @@ function stepIn() {
     /*
      * Addressing Modes Demodulation
      */
-    if (/add|sub|mul|ldr|str|ldrb|strb|mov|and|orr|mvn|lsl|lsr|cmp|b(eq|ne|ge|lt|gt|le)|b/i.test(instArr[0])) {
+    if (kernalRegex.test(instArr[0])) {
         inst = instArr[0].toLowerCase();
         var i;
         for (i = 1; i < instArr.length; i++) {
@@ -299,7 +364,11 @@ function stepIn() {
         }
         argsStr = argsStr.split(/undefined/);
         args = argsStr[1].replace(/\[/, "").replace(/\]/, "").split(/,/);
-        kernal.getItem(inst).action(args);
+        try {
+            kernal.getItem(inst).action(args);
+        } catch (e) {
+            $('#stdout_').val("not implemented yet ;)");
+        }
         ic++;
     }
     updateUI();
@@ -308,12 +377,12 @@ function stepIn() {
 function changeBase(newBase) {
     var i;
     for (i = 0; i < 16; i++) {
-        $('#r' + i).val(parseInt($('#r' + i).val(), prevBase).toString(newBase));
+        $('#r' + i).val(Number.parseInt($('#r' + i).val(), prevBase).toString(newBase));
     }
-    $('#n').val(parseInt($('#n').val(), prevBase).toString(newBase));
-    $('#z').val(parseInt($('#z').val(), prevBase).toString(newBase));
-    $('#c').val(parseInt($('#c').val(), prevBase).toString(newBase));
-    $('#v').val(parseInt($('#v').val(), prevBase).toString(newBase));
+    $('#n').val(Number.parseInt($('#n').val(), prevBase).toString(newBase));
+    $('#z').val(Number.parseInt($('#z').val(), prevBase).toString(newBase));
+    $('#c').val(Number.parseInt($('#c').val(), prevBase).toString(newBase));
+    $('#v').val(Number.parseInt($('#v').val(), prevBase).toString(newBase));
     prevBase = newBase;
 }
 

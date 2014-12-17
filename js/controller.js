@@ -2,17 +2,15 @@
  * simulate the arm code on server using ajax call 
  */
 function simulate() {
-    var code_ = editor.getValue();
-    var stdin_ = document.getElementById("stdin_").value;
     $.post(
             "Simulator.php",
             {
                 type: "arm-windows",
-                code: code_,
-                stdin: stdin_
+                code: editor.getValue(),
+                stdin: $("#stdin_").value
             },
     function(data) {
-        document.getElementById("stdout_").innerHTML = data;
+        $("#stdout_").innerHTML = data;
         $.scrollTop();
     });
 }
