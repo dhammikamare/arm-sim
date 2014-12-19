@@ -1,3 +1,57 @@
+commit 5cd72a7679ef96f166965099ba110e1ce838fa5f
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Fri Dec 19 12:58:16 2014 +0530
+
+    adding more examples
+
+commit e76449d5c8221843fa7a1c01db93d8f84e4740ae
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Fri Dec 19 12:57:38 2014 +0530
+
+    adding js functional features
+
+commit f7f320aefd7d9952f3570fec2113e42cd91e2f8c
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Fri Dec 19 12:55:20 2014 +0530
+
+    adding effects to assemble
+
+commit a5396ac054a342478b4456c1c172f6c78f0994b2
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Dec 17 22:06:03 2014 +0530
+
+    adding new functionalities
+
+commit 790c558d7379ab3ddb1d0687ebf692e41c49cd92
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Dec 17 22:02:16 2014 +0530
+
+    adding dashboard to UI
+
+commit ccbd11f8d3d1a0b322cc0894d7cf4b33eebe8073
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Dec 17 22:00:52 2014 +0530
+
+    adding more examples
+
+commit a040e53e5e1c216d07cf505ec3f35951587a25dc
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Dec 17 19:28:07 2014 +0530
+
+    updating Readme
+
+commit 046103bf541bb934011870672f4b6183334a6255
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Wed Dec 17 19:10:28 2014 +0530
+
+    updating gitignore
+
+commit 08b42eae2344c994ea0f4f0869f9559fd1a14bca
+Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
+Date:   Sun Dec 14 07:51:04 2014 +0530
+
+    updating commit log
+
 commit fb9e8b5467a95fe3d4f734b423e487f0161b0950
 Author: Dhammika Marasinghe <dhammikammdb123@gmail.com>
 Date:   Sun Dec 14 07:49:46 2014 +0530
