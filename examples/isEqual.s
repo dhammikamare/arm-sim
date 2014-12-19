@@ -11,10 +11,10 @@ main:
 	SUB		sp, sp, #4
 	STR		lr, [sp, #0]
 	
-	MOV		r2, #16
-	MOV		r3, #18
+	MOV		r1, #16
+	MOV		r2, #18
 	
-	CMP		r2, r3
+	CMP		r1, r2
 	BNE		else
 	
 	LDR		r0, =ifstr
@@ -35,5 +35,5 @@ finish:
 
 @ data memory ***************
 	.data
-ifstr: .asciz "The numbers are Equal.\n" 
-elsestr: .asciz "The numbers are Not Equal.\n"
+ifstr: .asciz "The numbers %d and %d are Equal.\n" 
+elsestr: .asciz "The numbers %d and %d are Not Equal.\n"
