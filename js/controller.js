@@ -2,16 +2,18 @@
  * simulate the arm code on server using ajax call 
  */
 function simulate() {
+    var code_ = editor.getValue();
+    var stdin_ = $('#stdin_').val();
     $.post(
             "Simulator.php",
             {
                 type: "arm-windows",
-                code: editor.getValue(),
-                stdin: $("#stdin_").value
+                code: code_,
+                stdin: stdin_
             },
     function(data) {
-        $("#stdout_").innerHTML = data;
-        $.scrollTop();
+        document.getElementById("stdout_").innerHTML = data;
+        $('#stdout_').text(data);
     });
 }
 
@@ -35,11 +37,11 @@ function destroyClickedElement(event) {
 function saveTextAsFile() {
     var textToWrite = editor.getValue();
     var textFileAsBlob = new Blob([textToWrite], {type: 'text/plain'});
-    var fileNameToSaveAs = "prog.s"
+    var fileNameToSaveAs = "prog.s";
     var downloadLink = document.createElement("a");
     downloadLink.download = fileNameToSaveAs;
     downloadLink.innerHTML = "Download File";
-    if (window.webkitURL != null) {
+    if (window.webkitURL !== null) {
         // Chrome allows the link to be clicked
         // without actually adding it to the DOM.
         downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);

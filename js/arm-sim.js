@@ -4,8 +4,12 @@ var kernalRegex;
 var lables;
 var lineMapping;
 var dataMemory;
-var instructionLines;
+var stackMemory;
+var instructionMemory;
+var instructions;
 
+var instTrTdHTML;
+var dataTrTdHTML;
 var stepInLine;
 var currentLine;
 var prevBase;
@@ -37,6 +41,34 @@ function getVal(args) {
     }
 }
 
+function pad(n, width, z) {
+    z = z || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
+function getPaddedBinary(val, width) {
+    return pad(Number.parseInt(val.replace(/r|#/, ""), 10).toString(2), width);
+}
+
+/*
+ * Memory Stack Data Structure
+ */
+function MemoryStack() {
+    this.ht = new HashTable();
+    this.setWord = function(in_key, in_value) {
+        var val = pad(Number.parseInt(in_value, 10).toString(2), 32);
+        if (val.length > 32) {
+            console.error('bit limit exceed.');
+        }
+        this.ht.setItem(in_key, val);
+    };
+
+    this.getWord = function(in_key) {
+        return this.ht.getItem(in_key);
+    };
+}
+
 /*
  * begin: Implementation of arm instructions
  */
@@ -46,14 +78,24 @@ function ADD() {
     this.action = function(args) {
         regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])) + Number.parseInt(getVal(args[2])));
     };
+    this.represent = function(args) {
+        var Opcode = "0100";
+        return args.replace("xxxx", Opcode);
+    };
 }
 function SUB() {
     this.action = function(args) {
         regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])) - Number.parseInt(getVal(args[2])));
     };
+    this.represent = function(args) {
+        var Opcode = "0010";
+        return args.replace("xxxx", Opcode);
+    };
+
 }
 function MUL() {
     this.action = function(args) {
+        console.log(args);
         regs.setItem(getRegVar(args[0]), Number.parseInt(getVal(args[1])) * Number.parseInt(getVal(args[2])));
     };
 }
@@ -70,14 +112,22 @@ function LDR() {
         }
         console.error('not implement');
     };
+    this.represent = function(args) {
+        var Opcode = "011001";
+        return args.replace("xxxxxx", Opcode);
+    };
 }
 function STR() {
     this.action = function(args) {
-        if (args.length === 2 || args[2] === 0) {
+        if (args.length === 2 || args[2] === '#0') {
             regs.setItem(getRegVar(args[1]), Number.parseInt(getVal(args[0])));
             return;
         }
         console.error('not implement');
+    };
+    this.represent = function(args) {
+        var Opcode = "100100";
+        return args.replace("xxxxxx", Opcode);
     };
 }
 function LDRB() {
@@ -248,8 +298,8 @@ function init() {
 
     kernal.setItem('ldr', new LDR());
     kernal.setItem('str', new STR());
-    //kernal.setItem('ldrb', new LDRB());
-    //kernal.setItem('strb', new STRB());
+    kernal.setItem('ldrb', new LDRB());
+    kernal.setItem('strb', new STRB());
     kernal.setItem('mov', new MOV());
 
     kernal.setItem('and', new AND());
@@ -269,9 +319,14 @@ function init() {
     kernal.setItem('b', new B());
     kernal.setItem('bl', new BL());
 
-    kernalRegex = /add|sub|mul|ldr|str|mov|and|orr|mvn|lsl|lsr|cmp|b(eq|ne|ge|lt|gt|le)|b|bl/i;
+    kernalRegex = /add|sub|mul|ldr|str|ldrb|strb|mov|and|orr|mvn|lsl|lsr|cmp|b(eq|ne|ge|lt|gt|le)|b|bl/i;
     prevBase = 10;
     ic = 0;
+    instTrTdHTML = "";
+    dataTrTdHTML = "";
+    $('#instructTBody').innerHTML = "";
+    $('#dataTBody').html("");
+    $('#stdout_').val("");
 }
 
 function updateUI() {
@@ -284,15 +339,15 @@ function updateUI() {
     $('#c').val(regs.getItem('c'));
     $('#v').val(regs.getItem('v'));
 
-    $('#editorLineNum').text('num of instructions: ' + instructionLines.length);
-    $('#stepInLine').text('InstructionNum: ' + stepInLine);
-    $('#instruct').text('instruct: ' + currentLine);
-    $('#ic').text('ic: ' + ic);
-    $('#lable').text('lable: ' + lables.print());
-    $('#data').text('data: ' + dataMemory.print());
+    $('#instruct').html('current instruction: <b>' + currentLine + '</b>');
+    $('#ic').text('instruction count (ic): ' + (instructions.length - lables.length));
+    $('#lable').text('lables: ' + lables.print());
+    $('#instructTBody').html(instTrTdHTML);
+    $('#dataTBody').html(dataTrTdHTML);
+
     editor.getSession().setAnnotations([{
             row: lineMapping.getItem(stepInLine) - 1,
-            text: "current execution line",
+            text: "current simulation line",
             type: "info"
         }]);
     editor.selection.moveCursorTo(lineMapping.getItem(stepInLine) - 1, 0, true);
@@ -300,9 +355,12 @@ function updateUI() {
 
 function assemble() {
     init();
+    $(".hide").show();
     lables = new HashTable();
-    instructionLines = new HashTable();
+    instructions = new HashTable();
     dataMemory = new HashTable();
+    stackMemory = new MemoryStack();
+    instructionMemory = new HashTable();
     lineMapping = new HashTable();
     var instructMemAddress = 0;
     var OninstructionLines = true;
@@ -317,17 +375,64 @@ function assemble() {
             OninstructionLines = false;
         }
         if (!(line.startsWith('#') || line.startsWith('@') || line.startsWith('.') || (line.length === 0))) {
-            instructMemAddress++;
             lineMapping.setItem(instructMemAddress, l + 1);
             if (dataItems.test(line)) {
                 var arr = line.split(dataItems);
                 lables.setItem(arr[0].trim(), instructMemAddress);
-                //console.log(arr[1].trim());
                 dataMemory.setItem(instructMemAddress, arr[1].trim());
+                dataTrTdHTML += ("<tr><td>" + instructMemAddress + "</td><td>" + arr[1].trim() + "</td></tr>");
             } else if (/:/.test(line) && OninstructionLines) {
                 lables.setItem(line, instructMemAddress);
             }
-            instructionLines.setItem(instructMemAddress, line);
+            instructions.setItem(instructMemAddress, line);
+
+            // creating instruction memory
+
+            var instArr = line.split(/[\t*|\s*]/);
+            var inst = '';
+            var argsStr = "";
+            var args;
+            var Cond, F, I, S, Rn, Rd, Operand2;
+            /*
+             * Addressing Modes Demodulation
+             */
+            if (kernalRegex.test(instArr[0])) {
+                inst = instArr[0].toLowerCase();
+                var i;
+                for (i = 1; i < instArr.length; i++) {
+                    argsStr += (instArr[i]).trim();
+                }
+                argsStr = argsStr.split(/undefined/);
+                args = argsStr[argsStr.length - 1].replace(/\[/, "").replace(/\]/, "").split(/,/);
+                var binCode = "not implemented";
+                Cond = "1110"; // AL-Always
+                S = "0";
+                I = "0";
+                try {
+                    if (/add|sub/.test(inst)) {
+                        F = "00";
+                        I = /#[0-9*]/.test(getRegVar(args[2])) ? '1' : '0';
+                        Rn = getPaddedBinary(getRegVar(args[1]), 4);
+                        Rd = getPaddedBinary(getRegVar(args[0]), 4);
+                        Operand2 = getPaddedBinary(getRegVar(args[2]), 12);
+                        binCode = kernal.getItem(inst).represent(Cond + F + I + "xxxx" + S + Rn + Rd + Operand2);
+                    } else if (/ldr|str/.test(inst)) {
+                        F = "01";
+                        Rn = getPaddedBinary(getRegVar(args[1]), 4);
+                        Rd = getPaddedBinary(getRegVar(args[0]), 4);
+                        Operand2 = getPaddedBinary(getRegVar(args[2]), 12);
+                        binCode = kernal.getItem(inst).represent(Cond + F + "xxxxxx" + Rn + Rd + Operand2);
+                    }
+                    //todo: other instruction formats
+                } catch (e) {
+                    binCode = "not implemented";
+                    console.error("representation not implemented yet ;)" + instructMemAddress);
+                }
+                instructionMemory.setItem(instructMemAddress, binCode);
+                instTrTdHTML += ("<tr><td>" + instructMemAddress + "</td><td>" + binCode + "</td></tr>");
+                ic++;
+            }
+            instructMemAddress++;
         }
     }
     // setStart
@@ -342,9 +447,9 @@ function assemble() {
 
 function stepIn() {
     stepInLine++;
-    currentLine = instructionLines.getItem(stepInLine);
+    currentLine = instructions.getItem(stepInLine);
     regs.setItem(getRegVar('pc'), stepInLine);
-    if (/.data/.test(currentLine) || stepInLine > instructionLines.length) {
+    if (/.data/.test(currentLine) || stepInLine > instructions.length) {
         alert('Note: code reaches the end.');
         $("#stepIn").prop('disabled', true);
         return;
@@ -367,7 +472,8 @@ function stepIn() {
         try {
             kernal.getItem(inst).action(args);
         } catch (e) {
-            $('#stdout_').val("not implemented yet ;)");
+            console.error("instruction not implemented yet ;)");
+            //alert("instruction not implemented yet ;)");
         }
         ic++;
     }
@@ -387,5 +493,19 @@ function changeBase(newBase) {
 }
 
 function disableRegVals() {
-    $(".regVal").prop('disabled', true);
+    // $(".regVal").prop('disabled', true);
+}
+
+function isNumber(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function changeRegVal(reg) {
+    var t = $("#" + reg).val();
+    if (isNumber(t)) {
+        regs.setItem(reg, t);
+        alert(reg + ' changed.');
+    } else {
+        alert('enter valid value');
+    }
 }

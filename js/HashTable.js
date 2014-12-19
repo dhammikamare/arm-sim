@@ -53,8 +53,12 @@ function HashTable() {
         this.length = 0;
     };
 
-    this.printToConsole = function() {
-        console.log(this.items);
+    this.print = function() {
+        var out = "[ ";
+        for (var i in this.items) {
+            out += ("; " + i);
+        }
+        return out + " ]";
     };
 }
 /*
